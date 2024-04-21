@@ -1,6 +1,6 @@
 ﻿namespace cslox
 {
-	internal abstract class Expr<R>
+	internal abstract class Expr
 	{
 		public interface IAstVisitor<R>
 		{
@@ -9,69 +9,69 @@
 			R visitLiteralExpr(Literal expr);
 			R visitUnaryExpr(Unary expr);
 		}
-		public class Binary : Expr<R>
+		public class Binary : Expr
 		{
-			readonly Expr<R> left;
-			readonly Token op;
-			readonly Expr<R> right;
+			public readonly Expr left;
+			public readonly Token op;
+			public readonly Expr right;
 
-			public Binary(Expr<R> left, Token op, Expr<R> right)
+			public Binary(Expr left, Token op, Expr right)
 			{
 				this.left = left;
 				this.op = op;
 				this.right = right;
 			}
 
-			public override R accept(IAstVisitor<R> visitor)
+			public override R accept<R>(IAstVisitor<R> visitor)
 			{
 				return visitor.visitBinaryExpr(this);
 			}
 		}
-		public class Grouping : Expr<R>
+		public class Grouping : Expr
 		{
-			readonly Expr<R> expression;
+			public readonly Expr expression;
 
-			public Grouping(Expr<R> expression)
+			public Grouping(Expr expression)
 			{
 				this.expression = expression;
 			}
 
-			public override R accept(IAstVisitor<R> visitor)
+			public override R accept<R>(IAstVisitor<R> visitor)
 			{
 				return visitor.visitGroupingExpr(this);
 			}
 		}
-		public class Literal : Expr<R>
+		public class Literal : Expr
 		{
-			readonly object value;
+			public readonly object value;
 
 			public Literal(object value)
 			{
 				this.value = value;
 			}
 
-			public override R accept(IAstVisitor<R> visitor)
+			public override R accept<R>(IAstVisitor<R> visitor)
 			{
 				return visitor.visitLiteralExpr(this);
 			}
 		}
-		public class Unary : Expr<R>
+		public class Unary : Expr
 		{
-			readonly Token op;
-			readonly Expr<R> right;
+			public readonly Token op;
+			public readonly Expr right;
 
-			public Unary(Token op, Expr<R> right)
+			public Unary(Token op, Expr right)
 			{
 				this.op = op;
 				this.right = right;
 			}
 
-			public override R accept(IAstVisitor<R> visitor)
+			public override R accept<R>(IAstVisitor<R> visitor)
 			{
 				return visitor.visitUnaryExpr(this);
 			}
 		}
 
-		public abstract R accept(IAstVisitor<R> visitor);
+		public abstract R accept<R>(IAstVisitor<R> visitor);
 	}
 }
