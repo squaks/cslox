@@ -44,11 +44,79 @@
                 case '=': addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;
                 case '<': addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS); break;
                 case '>': addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER); break;
+                case '/':
+                    if (match('/'))
+                    {
+                        // A comment goes until the end of the line.
+                        while (peek() != '\n' && !isAtEnd()) advance();
+                    }
+                    else
+                    {
+                        addToken(TokenType.SLASH);
+                    }
+                    break;
+
+                case ' ':
+                case '\r':
+                case '\t':
+                    // Ignore whitespace.
+                    break;
+
+                case '\n':
+                    line++;
+                    break;
+
+                case '"': str(); break;
 
                 default:
-                    Lox.error(line, "Unexpected character.");
+                    if (isDigit(c))
+                    {
+                        number();
+                    }
+                    else
+                    {
+                        Lox.error(line, "Unexpected character.");
+                    }
                     break;
             }
+        }
+
+        private void number()
+        {
+            while (isDigit(peek())) advance();
+
+            // Look for a fractional part
+            if (peek() == '.' && isDigit(peekNext()))
+            {
+                // Consume the "."
+                advance();
+
+                while (isDigit(peek())) advance();
+            }
+
+            addToken(TokenType.NUMBER, Convert.ToDouble(source[start..current]));
+        }
+
+        private void str()
+        {
+            while (peek() != '"' && !isAtEnd())
+            {
+                if (peek() == '\n') line++;
+                advance();
+            }
+
+            if (isAtEnd())
+            {
+                Lox.error(line, "Unterminated string.");
+                return;
+            }
+
+            // The closing ".
+            advance();
+
+            // Trim the surrounding quotes.
+            string value = source[(start + 1)..(current - 1)];
+            addToken(TokenType.STRING, value);
         }
 
         private bool match(char expected)
@@ -58,6 +126,23 @@
 
             current++;
             return true;
+        }
+
+        private char peek()
+        {
+            if (isAtEnd()) return '\0';
+            return source[current];
+        }
+
+        private char peekNext()
+        {
+            if (current + 1 >= source.Length) return '\0';
+            return source[current + 1];
+        }
+
+        private bool isDigit(char c)
+        {
+            return c >= '0' && c <= '9';
         }
 
         private bool isAtEnd()
