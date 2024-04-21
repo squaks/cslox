@@ -52,7 +52,7 @@
             }
         }
 
-        static void error (int line, string message) 
+        public static void error (int line, string message) 
         {
             report(line, "", message);
         }
