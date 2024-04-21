@@ -4,10 +4,10 @@
     {
         readonly TokenType type;
         readonly string lexeme;
-        readonly Object literal;
+        readonly object literal;
         readonly int line;
 
-        Token(TokenType type, String lexeme, Object literal, int line)
+        public Token(TokenType type, string lexeme, object literal, int line)
         {
             this.type = type;
             this.lexeme = lexeme;
@@ -15,7 +15,7 @@
             this.line = line;
         }
 
-        public String toString()
+        public string toString()
         {
             return type + " " + lexeme + " " + literal;
         }

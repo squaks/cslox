@@ -45,7 +45,7 @@
 
         private static void run(string source)
         {
-            List<string> tokens = new(source.Split(">"));
+            List<string> tokens = new(source.Split(" "));
             for (int i = 0; i < tokens.Count(); i++)
             {
                 Console.WriteLine(tokens[i]);
