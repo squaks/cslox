@@ -3,17 +3,34 @@
     internal class Scanner
     {
         private readonly string source;
-        private readonly List<Token> tokens = new();
+        private readonly List<Token> tokens = [];
         private int start = 0;
         private int current = 0;
         private int line = 1;
+        private static readonly Dictionary<string, TokenType> keywords = [];
 
         public Scanner(string source)
         {
             this.source = source;
+            keywords["and"] = TokenType.AND;
+            keywords["class"] = TokenType.CLASS;
+            keywords["else"] = TokenType.ELSE;
+            keywords["false"] = TokenType.FALSE;
+            keywords["for"] = TokenType.FOR;
+            keywords["fun"] = TokenType.FUN;
+            keywords["if"] = TokenType.IF;
+            keywords["nil"] = TokenType.NIL;
+            keywords["or"] = TokenType.OR;
+            keywords["print"] = TokenType.PRINT;
+            keywords["return"] = TokenType.RETURN;
+            keywords["super"] = TokenType.SUPER;
+            keywords["this"] = TokenType.THIS;
+            keywords["true"] = TokenType.TRUE;
+            keywords["var"] = TokenType.VAR;
+            keywords["while"] = TokenType.WHILE;
         }
 
-        List<Token> scanTokens()
+        public List<Token> scanTokens()
         {
             while (!isAtEnd())
             {
@@ -73,12 +90,30 @@
                     {
                         number();
                     }
+                    else if (isAlpha(c))
+                    {
+                        identifier();
+                    }
                     else
                     {
                         Lox.error(line, "Unexpected character.");
                     }
                     break;
             }
+        }
+
+        private void identifier()
+        {
+            while (isAlphaNumeric(peek())) advance();
+
+            string text = source[start..current];   
+            if (keywords.ContainsKey(text))
+            {
+                TokenType type = keywords[text];
+                type = TokenType.IDENTIFIER;
+                addToken(type);
+            }
+            
         }
 
         private void number()
@@ -94,7 +129,7 @@
                 while (isDigit(peek())) advance();
             }
 
-            addToken(TokenType.NUMBER, Convert.ToDouble(source[start..current]));
+            addToken(TokenType.NUMBER);
         }
 
         private void str()
@@ -138,6 +173,16 @@
         {
             if (current + 1 >= source.Length) return '\0';
             return source[current + 1];
+        }
+
+        private bool isAlpha(char c)
+        {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+        }
+
+        private bool isAlphaNumeric(char c)
+        {
+            return isAlpha(c) || isDigit(c);
         }
 
         private bool isDigit(char c)

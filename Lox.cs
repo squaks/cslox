@@ -45,10 +45,12 @@
 
         private static void run(string source)
         {
-            List<string> tokens = new(source.Split(" "));
+            Scanner scanner = new Scanner(source);
+            List<Token> tokens = scanner.scanTokens();
+
             for (int i = 0; i < tokens.Count(); i++)
             {
-                Console.WriteLine(tokens[i]);
+                Console.WriteLine(tokens[i].toString());
             }
         }
 
