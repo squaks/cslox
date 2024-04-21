@@ -1,13 +1,13 @@
 ﻿namespace cslox
 {
-    internal class Program
+    internal class Lox
     {
         static bool hadError = false;
         static void Main(string[] args)
         {
             if (args.Length > 1)
             {
-                Console.WriteLine("Usage: jlox [script]");
+                Console.WriteLine("Usage: cslox [script]");
                 Environment.Exit(64);
             }
             else if (args.Length == 1)
@@ -35,7 +35,7 @@
             StreamReader reader = new StreamReader(Console.OpenStandardInput());
             for (;;)
             {
-                Console.WriteLine("> ");
+                Console.Write("> ");
                 string? line = reader.ReadLine();
                 if (line is null) break;
                 run(line);
