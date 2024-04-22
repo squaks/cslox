@@ -1,6 +1,6 @@
 ﻿namespace cslox
 {
-	internal abstract class Expr
+    internal abstract class Expr
 	{
 		public interface IAstVisitor<R>
 		{
