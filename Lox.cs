@@ -64,5 +64,17 @@
             Console.Error.WriteLine("[line " + line + "] Error" + where + ": " + message);
             hadError = true;
         }
+
+        public static void error(Token token, string message)
+        {
+            if (token.type == TokenType.EOF)
+            {
+                report(token.line, " at end", message);
+            }
+            else
+            {
+                report(token.line, "at '" + token.lexeme + "'", message);
+            }
+        }
     }
 }

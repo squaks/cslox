@@ -1,9 +1,12 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using System.Linq.Expressions;
 
 namespace cslox
 {
     internal class Parser
     {
+        private class ParseError : Exception { }
+
         private readonly List<Token> tokens;
         private int current = 0;
 
@@ -98,7 +101,7 @@ namespace cslox
             if (match(TokenType.LEFT_PAREN))
             {
                 Expr expr = expression();
-                //consume(TokenType.RIGHT_PAREN, "Expecte ')' after expression.");
+                consume(TokenType.RIGHT_PAREN, "Expecte ')' after expression.");
                 return new Expr.Grouping(expr);
             }
 
@@ -117,6 +120,13 @@ namespace cslox
             }
 
             return false;
+        }
+
+        private Token consume(TokenType type, string message)
+        {
+            if (check(type)) return advance();
+
+            throw error(peek(), message);
         }
 
         private bool check(TokenType type) 
@@ -144,6 +154,37 @@ namespace cslox
         private Token previous()
         {
             return tokens[current - 1];
+        }
+
+        private ParseError error(Token token, string message)
+        {
+            Lox.error(token, message);
+            return new ParseError();
+        }
+
+        private void synchronize()
+        {
+            advance();
+
+            while (!isAtEnd())
+            {
+                if (previous().type == TokenType.SEMICOLON) return;
+
+                switch (peek().type)
+                {
+                    case TokenType.CLASS:
+                    case TokenType.FUN:
+                    case TokenType.VAR:
+                    case TokenType.FOR:
+                    case TokenType.IF:
+                    case TokenType.WHILE:
+                    case TokenType.PRINT:
+                    case TokenType.RETURN:
+                        return;
+                }
+
+                advance();
+            }
         }
     }
 }
