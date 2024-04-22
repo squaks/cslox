@@ -6,7 +6,6 @@ namespace cslox
     internal class Parser
     {
         private class ParseError : Exception { }
-
         private readonly List<Token> tokens;
         private int current = 0;
 
@@ -14,6 +13,19 @@ namespace cslox
         {
             this.tokens = tokens;
         }
+
+        public Expr parse()
+        {
+            try
+            {
+                return expression();
+            } 
+            catch (ParseError error) 
+            {
+                return null;
+            }
+        }
+
         private Expr expression()
         {
             return equality();
@@ -105,7 +117,7 @@ namespace cslox
                 return new Expr.Grouping(expr);
             }
 
-            return expression();
+            throw error(peek(), "Expect expression.");
         }
 
         private bool match(params TokenType[] types)

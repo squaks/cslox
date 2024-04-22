@@ -48,10 +48,13 @@
             Scanner scanner = new Scanner(source);
             List<Token> tokens = scanner.scanTokens();
 
-            for (int i = 0; i < tokens.Count(); i++)
-            {
-                Console.WriteLine(tokens[i].toString());
-            }
+            Parser parser = new Parser(tokens);
+            Expr expression = parser.parse();
+
+            // Stop if there was a syntax error.
+            if (hadError) return;
+
+            Console.WriteLine(new AstPrinter().print(expression));
         }
 
         public static void error (int line, string message) 
